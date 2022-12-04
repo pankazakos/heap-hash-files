@@ -1,3 +1,3 @@
-# heap-isam-files
+# heap-hash-files
 
-This is the first assignment of database management systems implementation class of 2022-2023.
+This is the first assignment of DBMS implementation class of 2022-2023.
