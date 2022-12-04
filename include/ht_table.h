@@ -2,6 +2,9 @@
 #define HT_TABLE_H
 #include <record.h>
 
+#define HT_OK 0
+#define HT_ERROR -1
+
 typedef struct {
   // Να το συμπληρώσετε
 } HT_info;

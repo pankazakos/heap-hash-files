@@ -6,18 +6,18 @@
 #include "ht_table.h"
 #include "record.h"
 
-#define CALL_OR_DIE(call)                                                      \
+#define CALL_BF(call)                                                          \
   {                                                                            \
     BF_ErrorCode code = call;                                                  \
     if (code != BF_OK) {                                                       \
       BF_PrintError(code);                                                     \
-      exit(code);                                                              \
+      return HT_ERROR;                                                         \
     }                                                                          \
   }
 
 int HT_CreateFile(char *fileName, int buckets) {
   // create file
-  return 0;
+  return HT_OK;
 }
 
 HT_info *HT_OpenFile(char *fileName) {
@@ -27,15 +27,15 @@ HT_info *HT_OpenFile(char *fileName) {
 
 int HT_CloseFile(HT_info *HT_info) {
   // close file
-  return 0;
+  return HT_OK;
 }
 
 int HT_InsertEntry(HT_info *ht_info, Record record) {
   // insert entry
-  return 0;
+  return HT_OK;
 }
 
 int HT_GetAllEntries(HT_info *ht_info, void *value) {
   // get all entries
-  return 0;
+  return HT_OK;
 }

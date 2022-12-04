@@ -17,7 +17,7 @@
 
 int HP_CreateFile(char *fileName) {
   // create file
-  return 0;
+  return HP_OK;
 }
 
 HP_info *HP_OpenFile(char *fileName) {
@@ -27,15 +27,15 @@ HP_info *HP_OpenFile(char *fileName) {
 
 int HP_CloseFile(HP_info *hp_info) {
   // close file
-  return 0;
+  return HP_OK;
 }
 
 int HP_InsertEntry(HP_info *hp_info, Record record) {
   // insert entry
-  return 0;
+  return HP_OK;
 }
 
 int HP_GetAllEntries(HP_info *hp_info, int value) {
   // get all entries
-  return 0;
+  return HP_OK;
 }
