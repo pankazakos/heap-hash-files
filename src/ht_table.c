@@ -6,37 +6,36 @@
 #include "ht_table.h"
 #include "record.h"
 
-#define CALL_OR_DIE(call)     \
-  {                           \
-    BF_ErrorCode code = call; \
-    if (code != BF_OK) {      \
-      BF_PrintError(code);    \
-      exit(code);             \
-    }                         \
+#define CALL_OR_DIE(call)                                                      \
+  {                                                                            \
+    BF_ErrorCode code = call;                                                  \
+    if (code != BF_OK) {                                                       \
+      BF_PrintError(code);                                                     \
+      exit(code);                                                              \
+    }                                                                          \
   }
 
-
-int HT_CreateFile(char *fileName,  int buckets){
-    return 0;
+int HT_CreateFile(char *fileName, int buckets) {
+  // create file
+  return 0;
 }
 
-HT_info* HT_OpenFile(char *fileName){
-    return NULL;
+HT_info *HT_OpenFile(char *fileName) {
+  // open file
+  return NULL;
 }
 
-
-int HT_CloseFile( HT_info* HT_info ){
-    return 0;
+int HT_CloseFile(HT_info *HT_info) {
+  // close file
+  return 0;
 }
 
-int HT_InsertEntry(HT_info* ht_info, Record record){
-    return 0;
+int HT_InsertEntry(HT_info *ht_info, Record record) {
+  // insert entry
+  return 0;
 }
 
-int HT_GetAllEntries(HT_info* ht_info, void *value ){
-    return 0;
+int HT_GetAllEntries(HT_info *ht_info, void *value) {
+  // get all entries
+  return 0;
 }
-
-
-
-

@@ -5,27 +5,29 @@
 extern "C" {
 #endif
 
-#define BF_BLOCK_SIZE 512      /* Το μέγεθος ενός block σε bytes */
-#define BF_BUFFER_SIZE 100     /* Ο μέγιστος αριθμός block που κρατάμε στην μνήμη */
-#define BF_MAX_OPEN_FILES 100  /* Ο μέγιστος αριθμός ανοικτών αρχείων */
+#define BF_BLOCK_SIZE 512 /* Το μέγεθος ενός block σε bytes */
+#define BF_BUFFER_SIZE 100 /* Ο μέγιστος αριθμός block που κρατάμε στην μνήμη \
+                            */
+#define BF_MAX_OPEN_FILES 100 /* Ο μέγιστος αριθμός ανοικτών αρχείων */
 
 typedef enum BF_ErrorCode {
   BF_OK,
-  BF_OPEN_FILES_LIMIT_ERROR,     /* Υπάρχουν ήδη BF_MAX_OPEN_FILES αρχεία ανοικτά */
-  BF_INVALID_FILE_ERROR,         /* Ο αναγνωριστικός αριθμός αρχείου δεν αντιστιχεί σε κάποιο ανοιχτό αρχείο */
-  BF_ACTIVE_ERROR,               /* Το επίπεδο BF είναι ενεργό και δεν μπορεί να αρχικοποιηθεί */
-  BF_FILE_ALREADY_EXISTS,        /* Το αρχείο δεν μπορεί να δημιουργιθεί γιατι υπάρχει ήδη */
-  BF_FULL_MEMORY_ERROR,          /* Η μνήμη έχει γεμίσει με ενεργά block */
-  BF_INVALID_BLOCK_NUMBER_ERROR, /* Το block που ζητήθηκε δεν υπάρχει στο αρχείο */
-  BF_AVAILABLE_PIN_BLOCKS_ERROR, /* Το αρχειο δεν μπορεί να κλείσει επειδή υπάρχουν ενεργά Block στην μνήμη */
+  BF_OPEN_FILES_LIMIT_ERROR, /* Υπάρχουν ήδη BF_MAX_OPEN_FILES αρχεία ανοικτά */
+  BF_INVALID_FILE_ERROR, /* Ο αναγνωριστικός αριθμός αρχείου δεν αντιστιχεί σε
+                            κάποιο ανοιχτό αρχείο */
+  BF_ACTIVE_ERROR, /* Το επίπεδο BF είναι ενεργό και δεν μπορεί να αρχικοποιηθεί
+                    */
+  BF_FILE_ALREADY_EXISTS, /* Το αρχείο δεν μπορεί να δημιουργιθεί γιατι υπάρχει
+                             ήδη */
+  BF_FULL_MEMORY_ERROR, /* Η μνήμη έχει γεμίσει με ενεργά block */
+  BF_INVALID_BLOCK_NUMBER_ERROR, /* Το block που ζητήθηκε δεν υπάρχει στο αρχείο
+                                  */
+  BF_AVAILABLE_PIN_BLOCKS_ERROR, /* Το αρχειο δεν μπορεί να κλείσει επειδή
+                                    υπάρχουν ενεργά Block στην μνήμη */
   BF_ERROR
 } BF_ErrorCode;
 
-typedef enum ReplacementAlgorithm {
-  LRU,
-  MRU
-} ReplacementAlgorithm;
-
+typedef enum ReplacementAlgorithm { LRU, MRU } ReplacementAlgorithm;
 
 // Δομή Block
 typedef struct BF_Block BF_Block;
@@ -56,7 +58,7 @@ void BF_Block_SetDirty(BF_Block *block);
  * Άμα αλάξουμε τα δεδομένα θα πρέπει να κάνουμε το block dirty με την κλήση
  * της συνάρτησης BF_Block_GetData.
  */
-char* BF_Block_GetData(const BF_Block *block);
+char *BF_Block_GetData(const BF_Block *block);
 
 /*
  * Με τη συνάρτηση BF_Init πραγματοποιείται η αρχικοποίηση του επιπέδου BF.
@@ -72,7 +74,7 @@ BF_ErrorCode BF_Init(const ReplacementAlgorithm repl_alg);
  * BF_OK, ενώ σε περίπτωση αποτυχίας επιστρέφεται κωδικός λάθους. Αν θέλετε να
  * δείτε το είδος του λάθους μπορείτε να καλέσετε τη συνάρτηση BF_PrintError.
  */
-BF_ErrorCode BF_CreateFile(const char* filename);
+BF_ErrorCode BF_CreateFile(const char *filename);
 
 /*
  * Η συνάρτηση BF_OpenFile ανοίγει ένα υπάρχον αρχείο από blocks με όνομα
@@ -81,7 +83,7 @@ BF_ErrorCode BF_CreateFile(const char* filename);
  * αποτυχίας, επιστρέφεται ένας κωδικός λάθους. Αν θέλετε να δείτε το είδος
  * του λάθους μπορείτε να καλέσετε τη συνάρτηση BF_PrintError.
  */
-BF_ErrorCode BF_OpenFile(const char* filename, int *file_desc);
+BF_ErrorCode BF_OpenFile(const char *filename, int *file_desc);
 
 /*
  * Η συνάρτηση BF_CloseFile κλείνει το ανοιχτό αρχείο με αναγνωριστικό αριθμό
@@ -115,7 +117,6 @@ BF_ErrorCode BF_GetBlockCounter(const int file_desc, int *blocks_num);
  */
 BF_ErrorCode BF_AllocateBlock(const int file_desc, BF_Block *block);
 
-
 /*
  * Η συνάρτηση BF_GetBlock βρίσκει το block με αριθμό block_num του ανοιχτού
  * αρχείου file_desc και το επιστρέφει στην μεταβλητή block. Το block που
@@ -125,8 +126,7 @@ BF_ErrorCode BF_AllocateBlock(const int file_desc, BF_Block *block);
  * αποτυχίας, επιστρέφεται ένας κωδικός λάθους. Αν θέλετε να δείτε το είδος του
  * λάθους μπορείτε να καλέσετε τη συνάρτηση BF_PrintError.
  */
-BF_ErrorCode BF_GetBlock(const int file_desc,
-                         const int block_num,
+BF_ErrorCode BF_GetBlock(const int file_desc, const int block_num,
                          BF_Block *block);
 
 /*
