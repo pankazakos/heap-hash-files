@@ -26,7 +26,6 @@ int main() {
 
   Record record;
   srand(12569874);
-  int r;
   printf("Insert Entries\n");
   for (int id = 0; id < RECORDS_NUM; ++id) {
     record = randomRecord();
