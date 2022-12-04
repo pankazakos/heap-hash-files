@@ -3,9 +3,9 @@
 #include <string.h>
 #include <time.h>
 #include "bf.h"
-#include "hp_file.h"
+#include "ht_table.h"
 
-#define RECORDS_NUM 1000 // you can change it if you want
+#define RECORDS_NUM 200 // you can change it if you want
 #define FILE_NAME "data.db"
 
 #define CALL_OR_DIE(call)     \
@@ -20,8 +20,8 @@
 int main() {
   BF_Init(LRU);
 
-  HP_CreateFile(FILE_NAME);
-  HP_info* info = HP_OpenFile(FILE_NAME);
+  HT_CreateFile(FILE_NAME,10);
+  HT_info* info = HT_OpenFile(FILE_NAME);
 
   Record record;
   srand(12569874);
@@ -29,14 +29,13 @@ int main() {
   printf("Insert Entries\n");
   for (int id = 0; id < RECORDS_NUM; ++id) {
     record = randomRecord();
-    HP_InsertEntry(info, record);
+    HT_InsertEntry(info, record);
   }
 
   printf("RUN PrintAllEntries\n");
   int id = rand() % RECORDS_NUM;
-  printf("\nSearching for: %d",id);
-  HP_GetAllEntries(info, id);
+  HT_GetAllEntries(info, &id);
 
-  HP_CloseFile(info);
+  HT_CloseFile(info);
   BF_Close();
 }

@@ -4,7 +4,7 @@
 
 #include "bf.h"
 #include "hp_file.h"
-#define MAX_OPEN_FILES 20
+#include "record.h"
 
 #define CALL_BF(call)       \
 {                           \
@@ -15,25 +15,24 @@
   }                         \
 }
 
-int HP_CreateFile(char *fileName, Record_Attribute attr){
-    return -1;
+int HP_CreateFile(char *fileName){
+    return 0;
 }
 
 HP_info* HP_OpenFile(char *fileName){
-    return malloc(sizeof(HP_info));
-
+    return NULL ;
 }
 
 
-int HP_CloseFile( HP_info header_info ){
-    return -1;
+int HP_CloseFile( HP_info* hp_info ){
+    return 0;
 }
 
-int HP_InsertEntry(HP_info header_info, Record record){
-        return -1;
+int HP_InsertEntry(HP_info* hp_info, Record record){
+    return 0;
 }
 
-int HP_GetAllEntries(HP_info header_info, void *value ){
-    return -1;
+int HP_GetAllEntries(HP_info* hp_info, int value){
+   return 0;
 }
 
