@@ -15,6 +15,13 @@
     }                                                                          \
   }
 
+// call functions only in debug mode. Usage d(func())
+#ifdef DEBUG
+#define d(x) x
+#else
+#define d(x)
+#endif
+
 int HT_CreateFile(char *fileName, int buckets) {
   // create file
   return HT_OK;

@@ -3,6 +3,10 @@ compile: all
 
 all: hp bf ht
 
+all-hp: clean run-hp
+
+all-ht: clean run-ht
+
 Bin = ./build
 Include = ./include
 Lib = ./lib
@@ -37,7 +41,7 @@ clean:
 
 ### Debugging targets
 
-Debug_Flags = -g3 -DDebug -Wall
+Debug_Flags = -g3 -DDEBUG -Wall
 
 hp-deb:
 	@echo " Compile hp_main with debug flags instead of optimization flag ...";

@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "clean",
+            "command": "make clean",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "compile (debug flags)",
+            "command": "make deb",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "dependsOn": "clean",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "run-hp",
+            "command": "make run-hp",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "dependsOn": "clean",
+            "group": {
+                "kind": "test",
+            }
+        },
+        {
+            "type": "shell",
+            "label": "run-ht",
+            "command": "make run-ht",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "dependsOn": "clean",
+            "group": {
+                "kind": "test",
+            }
+        },
+    ]
+}
