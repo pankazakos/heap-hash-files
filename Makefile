@@ -57,3 +57,6 @@ gdb-ht: ht-deb
 
 valgrind-hp: hp-deb
 	valgrind ./$(Bin)/hp_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
+
+valgrind-ht: ht-deb
+	valgrind ./$(Bin)/ht_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
