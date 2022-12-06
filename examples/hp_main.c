@@ -7,7 +7,7 @@
 #include "hp_file.h"
 
 #define RECORDS_NUM 1000 // you can change it if you want
-#define FILE_NAME "data.db"
+#define FILE_NAME "heap.db"
 
 #define CALL_OR_DIE(call)                                                      \
   {                                                                            \
