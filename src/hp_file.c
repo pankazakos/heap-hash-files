@@ -146,5 +146,58 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
 
 int HP_GetAllEntries(HP_info *hp_info, int value) {
   // get all entries
-  return HP_OK;
+
+  int searched_blocks = 0;
+
+  // get number of blocks
+  int blocks;
+  CALL_BF(BF_GetBlockCounter(hp_info->fileDesc, &blocks));
+
+  // sequential search in all blocks
+  for (int i = 1; i < blocks; i++) {
+    BF_Block *curr_block;
+    BF_Block_Init(&curr_block);
+    CALL_BF(BF_GetBlock(hp_info->fileDesc, i, curr_block));
+    char *sdata = BF_Block_GetData(curr_block);
+    char *ndata = sdata;
+
+    ndata += CAPACITY * sizeof(Record);
+    HP_Block_info block_info;
+    memcpy(&block_info, ndata, sizeof(HP_Block_info));
+
+    // search all records inside each block
+    for (int j = 0; j < block_info.records; j++) { // hp_block_info.records
+      Record record;
+      ndata = sdata + j * sizeof(Record);
+      memcpy(&record, ndata, sizeof(Record));
+      if (record.id == value) {
+        Record helper;
+        strcpy(helper.record, "Record");
+        char *id = malloc(3 * sizeof(char));
+        strcpy(id, "ID");
+        strcpy(helper.name, "Name");
+        strcpy(helper.surname, "Surname");
+        strcpy(helper.city, "City");
+
+        printf("%-10s%-10s%-15s%-20s%-20s\n", helper.record, id, helper.name,
+               helper.surname, helper.city);
+
+        free(id);
+
+        printf("%-10s%-10d%-15s%-20s%-20s\n", record.record, record.id,
+               record.name, record.surname, record.city);
+
+        // return since assuming that file does not contain duplicates
+        CALL_BF(BF_UnpinBlock(curr_block));
+        BF_Block_Destroy(&curr_block);
+        return searched_blocks;
+      }
+    }
+
+    CALL_BF(BF_UnpinBlock(curr_block));
+    BF_Block_Destroy(&curr_block);
+    searched_blocks++;
+  }
+
+  return searched_blocks;
 }
