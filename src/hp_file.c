@@ -166,18 +166,18 @@ int HP_GetAllEntries(HP_info *hp_info, int value) {
     memcpy(&block_info, ndata, sizeof(HP_Block_info));
 
     // search all records inside each block
-    for (int j = 0; j < block_info.records; j++) { // hp_block_info.records
+    for (int j = 0; j < block_info.records; j++) {
       Record record;
       ndata = sdata + j * sizeof(Record);
       memcpy(&record, ndata, sizeof(Record));
       if (record.id == value) {
         Record helper;
-        strcpy(helper.record, "Record");
+        strncpy(helper.record, "Record", 7 * sizeof(char));
         char *id = malloc(3 * sizeof(char));
-        strcpy(id, "ID");
-        strcpy(helper.name, "Name");
-        strcpy(helper.surname, "Surname");
-        strcpy(helper.city, "City");
+        strncpy(id, "ID", 3 * sizeof(char));
+        strncpy(helper.name, "Name", 5 * sizeof(char));
+        strncpy(helper.surname, "Surname", 8 * sizeof(char));
+        strncpy(helper.city, "City", 5 * sizeof(char));
 
         printf("%-10s%-10s%-15s%-20s%-20s\n", helper.record, id, helper.name,
                helper.surname, helper.city);
