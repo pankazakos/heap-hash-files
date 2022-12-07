@@ -52,15 +52,13 @@ int HT_CreateFile(char *fileName, int buckets) {
   // initialize hash table
   int *hash_table = malloc(buckets * sizeof(int));
   for (int i = 0; i < buckets; i++) {
-    hash_table[i] = i;
+    hash_table[i] = i + 1; // skip metadata block
   }
   ht_info.hash_table = hash_table;
   memcpy(ndata, &ht_info, sizeof(HT_info));
 
   ndata += sizeof(HT_info);
   memcpy(ndata, ht_info.hash_table, buckets * sizeof(int));
-
-  free(hash_table);
 
   BF_Block_SetDirty(metadata_block);
   CALL_BF(BF_UnpinBlock(metadata_block));
@@ -139,12 +137,83 @@ HT_info *HT_OpenFile(char *fileName) {
 int HT_CloseFile(HT_info *HT_info) {
   // close file
   CALL_BF(BF_CloseFile(HT_info->fileDesc));
+  free(HT_info->hash_table);
   free(HT_info);
   return HT_OK;
 }
 
 int HT_InsertEntry(HT_info *ht_info, Record record) {
   // insert entry
+  int bucket = Hash_function(record.id, ht_info->numBuckets);
+
+  // get first block of bucket from hash_table
+  BF_Block *block;
+  BF_Block_Init(&block);
+  CALL_BF(BF_GetBlock(ht_info->fileDesc, ht_info->hash_table[bucket], block));
+  char *sdata = BF_Block_GetData(block);
+  char *ndata = sdata;
+  ndata += CAPACITY * sizeof(Record);
+
+  HT_block_info block_info;
+  memcpy(&block_info, ndata, sizeof(HT_block_info));
+
+  if (block_info.records == CAPACITY) {
+    // allocate new block and todo: update first block of bucket
+    BF_Block *new_block;
+    BF_Block_Init(&new_block);
+    CALL_BF(BF_AllocateBlock(ht_info->fileDesc, new_block));
+
+    // insert entry
+    char *sdata = BF_Block_GetData(new_block);
+    char *ndata = sdata;
+    memcpy(ndata, &record, sizeof(Record));
+
+    // update block_info
+    ndata += CAPACITY * sizeof(Record);
+    HT_block_info new_block_info;
+    memcpy(&new_block_info, ndata, sizeof(HT_block_info));
+    new_block_info.records = 1;
+    int blocks;
+    CALL_BF(BF_GetBlockCounter(ht_info->fileDesc, &blocks));
+    int new_block_idx = blocks - 1;
+    new_block_info.overflow_block = ht_info->hash_table[bucket];
+    memcpy(ndata, &new_block_info, sizeof(HT_block_info));
+
+    BF_Block_SetDirty(new_block);
+    CALL_BF(BF_UnpinBlock(new_block));
+    BF_Block_Destroy(&new_block);
+
+    // update first block of bucket
+    BF_Block *metadata_block;
+    BF_Block_Init(&metadata_block);
+    CALL_BF(BF_GetBlock(ht_info->fileDesc, 0, metadata_block));
+    char *smetadata = BF_Block_GetData(metadata_block);
+    char *nmetadata = smetadata;
+
+    int *hash_table = malloc(ht_info->numBuckets * sizeof(int));
+    nmetadata += sizeof(HT_info);
+    ht_info->hash_table[bucket] = new_block_idx;
+    memcpy(nmetadata, hash_table, ht_info->numBuckets * sizeof(int));
+
+    BF_Block_SetDirty(metadata_block);
+    CALL_BF(BF_UnpinBlock(metadata_block));
+    BF_Block_Destroy(&metadata_block);
+
+  } else {
+    // insert entry
+    ndata = sdata + block_info.records * sizeof(Record);
+    memcpy(ndata, &record, sizeof(Record));
+
+    // update block_info
+    block_info.records++;
+    ndata = sdata + CAPACITY * sizeof(Record);
+    memcpy(ndata, &block_info, sizeof(HT_block_info));
+    BF_Block_SetDirty(block);
+  }
+
+  CALL_BF(BF_UnpinBlock(block));
+  BF_Block_Destroy(&block);
+
   return HT_OK;
 }
 
