@@ -65,4 +65,7 @@ value. Η πρώτη δομή δίνει πληροφορία για το αρχ
 int HT_GetAllEntries(HT_info *header_info, /*επικεφαλίδα του αρχείου*/
                      void *value /*τιμή του πεδίου-κλειδιού προς αναζήτηση*/);
 
+/* Απλή συνάρτηση κατακερματισμού */
+int Hash_function(int key, int size);
+
 #endif // HT_FILE_H
