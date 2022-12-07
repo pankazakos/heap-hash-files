@@ -22,6 +22,8 @@
 #define d(x)
 #endif
 
+int Hash_function(int key, int size) { return key % size; }
+
 int HT_CreateFile(char *fileName, int buckets) {
   // create file
   CALL_BF(BF_CreateFile(fileName));
