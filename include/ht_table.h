@@ -6,11 +6,16 @@
 #define HT_ERROR -1
 
 typedef struct {
-  // Να το συμπληρώσετε
+  char type[20];
+  int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
+                   block */
+  int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
+  int *hash_table; /* πίνακας κατακερματισμού */
 } HT_info;
 
 typedef struct {
-  // Να το συμπληρώσετε
+  int records; /* αριθμός των εγγραφών ενος block */
+  BF_Block *overflow_block; /* δείκτης στο επόμενο block (block υπερχείλισης) */
 } HT_block_info;
 
 /*Η συνάρτηση HT_CreateFile χρησιμοποιείται για τη δημιουργία
