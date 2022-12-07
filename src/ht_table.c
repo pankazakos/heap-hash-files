@@ -67,9 +67,9 @@ int HT_CreateFile(char *fileName, int buckets) {
   BF_Block_Destroy(&metadata_block);
 
   // allocate initial blocks (suppose each starts with one block)
+  BF_Block *new_block;
+  BF_Block_Init(&new_block);
   for (int i = 0; i < buckets; i++) {
-    BF_Block *new_block;
-    BF_Block_Init(&new_block);
     CALL_BF(BF_AllocateBlock(fd, new_block));
 
     // store block info
@@ -84,8 +84,8 @@ int HT_CreateFile(char *fileName, int buckets) {
     // commit changes
     BF_Block_SetDirty(new_block);
     CALL_BF(BF_UnpinBlock(new_block));
-    BF_Block_Destroy(&new_block);
   }
+  BF_Block_Destroy(&new_block);
 
   CALL_BF(BF_CloseFile(ht_info.fileDesc));
   return HT_OK;
