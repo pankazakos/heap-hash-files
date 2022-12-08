@@ -7,6 +7,7 @@
 
 /* Η δομή HP_info κρατάει μεταδεδομένα που σχετίζονται με το αρχείο σωρού*/
 typedef struct {
+  char type[20];
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
   int capacity; /* ο μέγιστος αριθμός από εγγραφές για κάθε block του αρχείου*/
@@ -14,7 +15,6 @@ typedef struct {
 
 typedef struct {
   int records; /* αριθμός των εγγραφών ενος block */
-  BF_Block *next_block; /* δείκτης στο επόμενο block */
 } HP_Block_info;
 
 /*Η συνάρτηση HP_CreateFile χρησιμοποιείται για τη δημιουργία και
