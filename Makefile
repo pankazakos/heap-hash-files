@@ -34,10 +34,10 @@ run-ht: ht
 	./$(Bin)/ht_main
 
 Exec = $(Bin)/*
-DB = ./*.db
 
 clean:
-	rm -f $(Exec) $(DB)
+	rm -f $(Exec)
+	find . -name \*.db -type f -delete
 
 ### Debugging targets
 
@@ -59,8 +59,8 @@ gdb-hp: hp-deb
 gdb-ht: ht-deb
 	gdb ./$(Bin)/ht_main
 
-valgrind-hp: hp-deb
+valgrind-hp: clean hp-deb
 	valgrind ./$(Bin)/hp_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
 
-valgrind-ht: ht-deb
+valgrind-ht: clean ht-deb
 	valgrind ./$(Bin)/ht_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose

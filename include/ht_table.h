@@ -6,11 +6,17 @@
 #define HT_ERROR -1
 
 typedef struct {
-  // Να το συμπληρώσετε
+  char type[20];
+  int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
+                   block */
+  int capacity; /* χωρητικότητα εγγραφών κάθε μπλοκ */
+  int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
+  int *hash_table; /* πίνακας κατακερματισμού */
 } HT_info;
 
 typedef struct {
-  // Να το συμπληρώσετε
+  int records; /* αριθμός των εγγραφών ενος block */
+  int overflow_block; /* δείκτης στο επόμενο block (block υπερχείλισης) */
 } HT_block_info;
 
 /*Η συνάρτηση HT_CreateFile χρησιμοποιείται για τη δημιουργία
@@ -59,5 +65,8 @@ value. Η πρώτη δομή δίνει πληροφορία για το αρχ
 διαβάστηκαν, ενώ σε περίπτωση λάθους επιστρέφει -1.*/
 int HT_GetAllEntries(HT_info *header_info, /*επικεφαλίδα του αρχείου*/
                      void *value /*τιμή του πεδίου-κλειδιού προς αναζήτηση*/);
+
+/* Απλή συνάρτηση κατακερματισμού */
+int Hash_function(int key, int size);
 
 #endif // HT_FILE_H

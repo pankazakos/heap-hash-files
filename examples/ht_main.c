@@ -7,7 +7,7 @@
 #include "ht_table.h"
 
 #define RECORDS_NUM 200 // you can change it if you want
-#define FILE_NAME "data.db"
+#define FILE_NAME "hash.db"
 
 #define CALL_OR_DIE(call)                                                      \
   {                                                                            \
@@ -17,13 +17,6 @@
       exit(code);                                                              \
     }                                                                          \
   }
-
-// call functions only in debug mode. Usage d(func())
-#ifdef DEBUG
-#define d(x) x
-#else
-#define d(x)
-#endif
 
 int main() {
   BF_Init(LRU);
@@ -41,6 +34,7 @@ int main() {
 
   printf("RUN PrintAllEntries\n");
   int id = rand() % RECORDS_NUM;
+  printf("\nSearching for: %d\n", id);
   HT_GetAllEntries(info, &id);
 
   HT_CloseFile(info);
