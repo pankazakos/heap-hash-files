@@ -6,7 +6,7 @@
 #include "bf.h"
 #include "ht_table.h"
 
-#define RECORDS_NUM 160 // you can change it if you want
+#define RECORDS_NUM 200 // you can change it if you want
 #define FILE_NAME "hash.db"
 
 #define CALL_OR_DIE(call)                                                      \
@@ -41,6 +41,7 @@ int main() {
 
   printf("RUN PrintAllEntries\n");
   int id = rand() % RECORDS_NUM;
+  printf("\nSearching for: %d\n", id);
   HT_GetAllEntries(info, &id);
 
   HT_CloseFile(info);

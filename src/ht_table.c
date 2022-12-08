@@ -114,10 +114,6 @@ HT_info *HT_OpenFile(char *fileName) {
   HT_info *ht_info = malloc(sizeof(HT_info));
   memcpy(ht_info, ndata, sizeof(HT_info));
 
-  int hash_table[ht_info->numBuckets];
-  ndata += sizeof(HT_info);
-  memcpy(hash_table, ndata, ht_info->numBuckets * sizeof(int));
-
   // check if file is a hash file
   printf("%s\n", ht_info->type);
   if (strcmp(ht_info->type, "Hash_file")) {
@@ -198,6 +194,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
     BF_Block_SetDirty(metadata_block);
     CALL_BF(BF_UnpinBlock(metadata_block));
     BF_Block_Destroy(&metadata_block);
+    free(hash_table);
 
   } else {
     // insert entry
@@ -218,6 +215,68 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
 }
 
 int HT_GetAllEntries(HT_info *ht_info, void *value) {
-  // get all entries
-  return HT_OK;
+  // find entries with given value
+
+  int casted_value;
+  memcpy(&casted_value, value, sizeof(int));
+
+  // hash value
+  int curr_block_idx = Hash_function(casted_value, ht_info->numBuckets);
+
+  // get first block of bucket
+  curr_block_idx = ht_info->hash_table[curr_block_idx];
+
+  // sequential search in bucket
+  // search first block and then the remaining blocks of bucket
+  while (1) {
+    BF_Block *curr_block;
+    BF_Block_Init(&curr_block);
+    CALL_BF(BF_GetBlock(ht_info->fileDesc, curr_block_idx, curr_block));
+    char *sdata = BF_Block_GetData(curr_block);
+    char *ndata = sdata;
+    ndata += CAPACITY * sizeof(Record);
+
+    // read block info
+    HT_block_info block_info;
+    memcpy(&block_info, ndata, sizeof(HT_block_info));
+
+    // sequential search in block
+    for (int i = 0; i < block_info.records; i++) {
+      ndata = sdata + i * sizeof(Record);
+      Record record;
+      memcpy(&record, ndata, sizeof(Record));
+      if (record.id == casted_value) {
+        Record helper;
+        strncpy(helper.record, "Record", 7 * sizeof(char));
+        char *id = malloc(3 * sizeof(char));
+        strncpy(id, "ID", 3 * sizeof(char));
+        strncpy(helper.name, "Name", 5 * sizeof(char));
+        strncpy(helper.surname, "Surname", 8 * sizeof(char));
+        strncpy(helper.city, "City", 5 * sizeof(char));
+
+        printf("%-10s%-10s%-15s%-20s%-20s\n", helper.record, id, helper.name,
+               helper.surname, helper.city);
+
+        free(id);
+
+        printf("%-10s%-10d%-15s%-20s%-20s\n", record.record, record.id,
+               record.name, record.surname, record.city);
+
+        // return since assuming that file does not contain duplicates
+        CALL_BF(BF_UnpinBlock(curr_block));
+        BF_Block_Destroy(&curr_block);
+        return HT_OK;
+      }
+    }
+    curr_block_idx = block_info.overflow_block;
+
+    // return if there is no overflow block left
+    if (curr_block_idx == -1) {
+      CALL_BF(BF_UnpinBlock(curr_block));
+      BF_Block_Destroy(&curr_block);
+      return HT_OK;
+    }
+    CALL_BF(BF_UnpinBlock(curr_block));
+    BF_Block_Destroy(&curr_block);
+  }
 }
