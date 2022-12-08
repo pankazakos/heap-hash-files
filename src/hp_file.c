@@ -138,9 +138,6 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
     char *sdata_new = BF_Block_GetData(new_block);
     char *ndata_new = sdata_new;
 
-    // Update next block of previous last block
-    memcpy(ndata, &block_info, sizeof(HP_Block_info));
-
     // insert first entry of new_block
     memcpy(ndata_new, &record, sizeof(Record));
 
