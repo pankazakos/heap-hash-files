@@ -187,9 +187,10 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
     char *smetadata = BF_Block_GetData(metadata_block);
     char *nmetadata = smetadata;
 
-    int *hash_table = malloc(ht_info->numBuckets * sizeof(int));
+    // allocate space for hash_table and initialize all bytes to 0 using calloc
+    // before writing to file
+    int *hash_table = calloc(ht_info->numBuckets, sizeof(int));
     nmetadata += sizeof(HT_info);
-    memset(hash_table, 0, ht_info->numBuckets * sizeof(int));
     ht_info->hash_table[bucket] = new_block_idx;
     memcpy(nmetadata, hash_table, ht_info->numBuckets * sizeof(int));
 
