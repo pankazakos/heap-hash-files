@@ -41,6 +41,7 @@ int HP_CreateFile(char *fileName) {
   char *sdata = BF_Block_GetData(metadata_block);
   char *ndata = sdata;
   HP_info hp_info;
+  memset(&hp_info, 0, sizeof(HP_info));
   strncpy(hp_info.type, "Heap_file", 10 * sizeof(char));
   hp_info.fileDesc = fd;
   hp_info.capacity = CAPACITY;

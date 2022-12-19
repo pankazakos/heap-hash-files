@@ -60,7 +60,7 @@ gdb-ht: ht-deb
 	gdb ./$(Bin)/ht_main
 
 valgrind-hp: clean hp-deb
-	valgrind ./$(Bin)/hp_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(Bin)/hp_main
 
 valgrind-ht: clean ht-deb
-	valgrind ./$(Bin)/ht_main --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(Bin)/ht_main

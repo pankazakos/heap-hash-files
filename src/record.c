@@ -19,6 +19,7 @@ static int id = 0;
 
 Record randomRecord() {
   Record record;
+  memset(&record, 0, sizeof(Record));
   memcpy(record.record, "record", strlen("record") + 1);
   // create a record
   record.id = id++;

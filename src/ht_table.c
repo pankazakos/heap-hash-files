@@ -45,6 +45,7 @@ int HT_CreateFile(char *fileName, int buckets) {
   char *sdata = BF_Block_GetData(metadata_block);
   char *ndata = sdata;
   HT_info ht_info;
+  memset(&ht_info, 0, sizeof(HT_info));
   strncpy(ht_info.type, "Hash_file", 10 * sizeof(char));
   ht_info.fileDesc = fd;
   ht_info.numBuckets = buckets;
@@ -154,7 +155,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
   memcpy(&block_info, ndata, sizeof(HT_block_info));
 
   if (block_info.records == CAPACITY) {
-    // allocate new block and todo: update first block of bucket
+    // allocate new block and update first block of bucket
     BF_Block *new_block;
     BF_Block_Init(&new_block);
     CALL_BF(BF_AllocateBlock(ht_info->fileDesc, new_block));
@@ -188,6 +189,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
 
     int *hash_table = malloc(ht_info->numBuckets * sizeof(int));
     nmetadata += sizeof(HT_info);
+    memset(hash_table, 0, ht_info->numBuckets * sizeof(int));
     ht_info->hash_table[bucket] = new_block_idx;
     memcpy(nmetadata, hash_table, ht_info->numBuckets * sizeof(int));
 
