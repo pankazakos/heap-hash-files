@@ -170,9 +170,6 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
     HT_block_info new_block_info;
     memcpy(&new_block_info, ndata, sizeof(HT_block_info));
     new_block_info.records = 1;
-    int blocks;
-    CALL_BF(BF_GetBlockCounter(ht_info->fileDesc, &blocks));
-    int new_block_idx = blocks - 1;
     new_block_info.overflow_block = ht_info->hash_table[bucket];
     memcpy(ndata, &new_block_info, sizeof(HT_block_info));
 
@@ -187,17 +184,16 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
     char *smetadata = BF_Block_GetData(metadata_block);
     char *nmetadata = smetadata;
 
-    // allocate space for hash_table and initialize all bytes to 0 using calloc
-    // before writing to file
-    int *hash_table = calloc(ht_info->numBuckets, sizeof(int));
     nmetadata += sizeof(HT_info);
+    int blocks;
+    CALL_BF(BF_GetBlockCounter(ht_info->fileDesc, &blocks));
+    int new_block_idx = blocks - 1;
     ht_info->hash_table[bucket] = new_block_idx;
-    memcpy(nmetadata, hash_table, ht_info->numBuckets * sizeof(int));
+    memcpy(nmetadata, ht_info->hash_table, ht_info->numBuckets * sizeof(int));
 
     BF_Block_SetDirty(metadata_block);
     CALL_BF(BF_UnpinBlock(metadata_block));
     BF_Block_Destroy(&metadata_block);
-    free(hash_table);
 
   } else {
     // insert entry
