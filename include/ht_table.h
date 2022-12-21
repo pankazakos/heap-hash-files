@@ -69,4 +69,6 @@ int HT_GetAllEntries(HT_info *header_info, /*επικεφαλίδα του αρ�
 /* Απλή συνάρτηση κατακερματισμού */
 int Hash_function(int key, int size);
 
+int HashStatistics(char *filename /* όνομα του αρχείου που ενδιαφέρει */);
+
 #endif // HT_FILE_H
