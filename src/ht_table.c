@@ -279,3 +279,106 @@ int HT_GetAllEntries(HT_info *ht_info, void *value) {
     BF_Block_Destroy(&curr_block);
   }
 }
+
+int HashStatistics(char *filename) {
+  // Hash Statistics
+
+  // open file
+  int fd;
+  CALL_BF(BF_OpenFile(filename, &fd));
+
+  // Read metadata of file
+  BF_Block *metadata_block;
+  BF_Block_Init(&metadata_block);
+  CALL_BF(BF_GetBlock(fd, 0, metadata_block));
+  char *metadata = BF_Block_GetData(metadata_block);
+
+  HT_info ht_info;
+  memcpy(&ht_info, metadata, sizeof(HT_info));
+
+  metadata += sizeof(HT_info);
+  int htable_size = ht_info.numBuckets * sizeof(int);
+  int *hash_table = malloc(htable_size);
+  memcpy(hash_table, metadata, htable_size);
+
+  CALL_BF(BF_UnpinBlock(metadata_block));
+  BF_Block_Destroy(&metadata_block);
+
+  int block_counter;
+  CALL_BF(BF_GetBlockCounter(fd, &block_counter));
+
+  int min = __INT_MAX__;
+  int max = -1;
+  int sum_records = 0;
+  int overflow_buckets = 0;
+  int *overflow_blocks = calloc(ht_info.numBuckets, sizeof(int));
+
+  // for each bucket of hash_table
+  for (int i = 0; i < ht_info.numBuckets; i++) {
+    int bucket_records = 0;
+    int curr_index = hash_table[i];
+    int overflow_flag = 0;
+
+    // for each block of bucket
+    while (1) {
+      // Read info of current block
+      BF_Block *curr_block;
+      BF_Block_Init(&curr_block);
+      CALL_BF(BF_GetBlock(fd, curr_index, curr_block));
+      char *data = BF_Block_GetData(curr_block);
+      data += CAPACITY * sizeof(Record);
+      HT_block_info block_info;
+      memcpy(&block_info, data, sizeof(HT_block_info));
+
+      bucket_records += block_info.records;
+
+      CALL_BF(BF_UnpinBlock(curr_block));
+      BF_Block_Destroy(&curr_block);
+
+      // stop if there are no overflow blocks left
+      if (block_info.overflow_block == -1) {
+        break;
+      }
+      overflow_flag = 1;
+      overflow_blocks[i]++;
+      curr_index = block_info.overflow_block;
+    }
+
+    if (overflow_flag) {
+      overflow_buckets++;
+    }
+
+    sum_records += bucket_records;
+    if (bucket_records < min) {
+      min = bucket_records;
+    } else if (bucket_records > max) {
+      max = bucket_records;
+    }
+  }
+
+  printf(
+      "-------------------------------------------------------------------\n");
+  printf("Total blocks: %d\n", block_counter);
+  printf("Minimum bucket records: %d\n", min);
+  printf("Maximum bucket records: %d\n", max);
+  printf("Average bucket records: %lf\n",
+         (double)sum_records / (double)ht_info.numBuckets);
+  printf("Average blocks of buckets: %lf\n",
+         (double)block_counter / (double)ht_info.numBuckets);
+  printf(
+      "-------------------------------------------------------------------\n");
+  printf("Buckets with overflow blocks: %d\n", overflow_buckets);
+
+  printf("Overflow blocks for each bucket\n");
+  for (int i = 0; i < ht_info.numBuckets; i++) {
+    if (overflow_blocks[i]) {
+      printf("Bucket %d:  %d\n", i, overflow_blocks[i]);
+    }
+  }
+  printf("\n");
+  free(hash_table);
+  free(overflow_blocks);
+  // close file
+  CALL_BF(BF_CloseFile(fd));
+  return HT_OK;
+}
