@@ -10,7 +10,6 @@ typedef struct {
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
   int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
-  char filename[20]; /* πρωτεύον αρχείο */
 } SHT_info;
 
 /*Η συνάρτηση SHT_CreateSecondaryIndex χρησιμοποιείται για τη δημιουργία
