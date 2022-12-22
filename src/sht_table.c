@@ -51,12 +51,46 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
 
 SHT_info *SHT_OpenSecondaryIndex(char *indexName) {
   // shtOpen
-  return SHT_OK;
+
+  // open file
+  int fd;
+  BF_ErrorCode code = BF_OpenFile(indexName, &fd);
+  if (code != BF_OK) {
+    BF_PrintError(code);
+    return NULL;
+  }
+
+  // read metadata of file
+  SHT_info *sht_info = malloc(sizeof(SHT_info));
+  BF_Block *metadata_block;
+  BF_Block_Init(&metadata_block);
+  code = BF_GetBlock(fd, 0, metadata_block);
+  if (code != BF_OK) {
+    BF_PrintError(code);
+    return NULL;
+  }
+
+  char *metadata = BF_Block_GetData(metadata_block);
+  memcpy(sht_info, metadata, sizeof(SHT_info));
+
+  // Update fileDescriptor
+  sht_info->fileDesc = fd;
+  memcpy(metadata, sht_info, sizeof(SHT_info));
+
+  code = BF_UnpinBlock(metadata_block);
+  if (code != BF_OK) {
+    BF_PrintError(code);
+    return NULL;
+  }
+  BF_Block_Destroy(&metadata_block);
+
+  return sht_info;
 }
 
-int SHT_CloseSecondaryIndex(SHT_info *SHT_info) {
+int SHT_CloseSecondaryIndex(SHT_info *sht_info) {
   // shtClose
-
+  CALL_BF(BF_CloseFile(sht_info->fileDesc));
+  free(sht_info);
   return SHT_OK;
 }
 
