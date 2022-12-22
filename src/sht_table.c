@@ -33,10 +33,8 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
 
   // store secondary index info in metadata block
   SHT_info sht_info;
-  memset(&sht_info, 0, sizeof(SHT_info));
   sht_info.fileDesc = fd;
   sht_info.numBuckets = buckets;
-  strncpy(sht_info.filename, fileName, 20 * sizeof(char));
   char *metadata = BF_Block_GetData(metadata_block);
   memcpy(metadata, &sht_info, sizeof(SHT_info));
 
