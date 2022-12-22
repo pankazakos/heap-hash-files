@@ -27,11 +27,18 @@ ht:
 	@echo " Compile hp_main ...";
 	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/ht_main.c $(SRC)/record.c $(SRC)/ht_table.c -lbf -o $(Bin)/ht_main -O2
 
+sht:
+	@echo " Compile hp_main ...";
+	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/sht_main.c $(SRC)/record.c $(SRC)/sht_table.c $(SRC)/ht_table.c -lbf -o $(Bin)/sht_main -O2
+
 run-hp: hp
 	./$(Bin)/hp_main
 
 run-ht: ht
 	./$(Bin)/ht_main
+
+run-sht:
+	./$(Bin)/sht_main
 
 Exec = $(Bin)/*
 
@@ -51,7 +58,11 @@ ht-deb:
 	@echo " Compile hp_main with debug flags instead of optimization flag ...";
 	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/ht_main.c $(SRC)/record.c $(SRC)/ht_table.c -lbf -o $(Bin)/ht_main $(Debug_Flags)
 
-deb: hp-deb ht-deb
+sht-deb:
+	@echo " Compile hp_main with debug flags instead of optimization flag ...";
+	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/sht_main.c $(SRC)/record.c $(SRC)/sht_table.c $(SRC)/ht_table.c -lbf -o $(Bin)/sht_main $(Debug_Flags)
+
+deb: hp-deb ht-deb sht-deb
 
 gdb-hp: hp-deb
 	gdb ./$(Bin)/hp_main
@@ -59,8 +70,14 @@ gdb-hp: hp-deb
 gdb-ht: ht-deb
 	gdb ./$(Bin)/ht_main
 
+gdb-sht:
+	gdb ./$(Bin)/sht_main
+
 valgrind-hp: clean hp-deb
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(Bin)/hp_main
 
 valgrind-ht: clean ht-deb
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(Bin)/ht_main
+
+valgrind-sht: clean sht-deb
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(Bin)/sht_main
