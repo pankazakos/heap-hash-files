@@ -7,12 +7,11 @@
 #define SHT_ERROR -1
 
 typedef struct {
-  // Να το συμπληρώσετε
+  int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
+                   block */
+  int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
+  char filename[20]; /* πρωτεύον αρχείο */
 } SHT_info;
-
-typedef struct {
-  // Να το συμπληρώσετε
-} SHT_block_info;
 
 /*Η συνάρτηση SHT_CreateSecondaryIndex χρησιμοποιείται για τη δημιουργία
 και κατάλληλη αρχικοποίηση ενός αρχείου δευτερεύοντος κατακερματισμού με
@@ -65,7 +64,5 @@ int SHT_SecondaryGetAllEntries(
 
 /* Απλή συνάρτηση κατακερματισμού */
 int Hash_function(int key, int size);
-
-int HashStatistics(char *filename /* όνομα του αρχείου που ενδιαφέρει */);
 
 #endif // SHT_FILE_H
