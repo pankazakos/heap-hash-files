@@ -49,7 +49,7 @@ int main() {
   SHT_CloseSecondaryIndex(index_info);
   HT_CloseFile(info);
   // Hash statistics
-  HashStatistics(FILE_NAME);
+  HT_HashStatistics(FILE_NAME);
   SHT_HashStatistics(INDEX_NAME);
   BF_Close();
 }
