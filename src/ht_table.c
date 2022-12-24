@@ -210,7 +210,9 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
   CALL_BF(BF_UnpinBlock(block));
   BF_Block_Destroy(&block);
 
-  return HT_OK;
+  int block_id = ht_info->hash_table[bucket];
+
+  return block_id;
 }
 
 int HT_GetAllEntries(HT_info *ht_info, void *value) {
