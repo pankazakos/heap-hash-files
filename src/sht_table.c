@@ -16,10 +16,10 @@
     }                                                                          \
   }
 
-int Hash_Function(char *name, int size) {
+int Hash_name(char *name, int size) {
   int sum = 0;
   int c;
-  while (c = *name++) {
+  while ((c = *name++) != 0) {
     sum += c;
   }
 

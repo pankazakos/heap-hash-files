@@ -63,6 +63,6 @@ int SHT_SecondaryGetAllEntries(
     char *name /* το όνομα στο οποίο γίνεται αναζήτηση */);
 
 /* Απλή συνάρτηση κατακερματισμού */
-int Hash_function(char *name, int size);
+int Hash_name(char *name, int size);
 
 #endif // SHT_FILE_H
