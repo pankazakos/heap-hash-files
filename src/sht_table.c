@@ -45,9 +45,18 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
   SHT_info sht_info;
   sht_info.fileDesc = fd;
   sht_info.numBuckets = buckets;
-  sht_info.hash_table = calloc(buckets, sizeof(int));
+  sht_info.hash_table = malloc(buckets * sizeof(int));
+
+  // store sht_info struct
   char *metadata = BF_Block_GetData(metadata_block);
   memcpy(metadata, &sht_info, sizeof(SHT_info));
+
+  // initialize and store hash table
+  for (int i = 0; i < buckets; i++) {
+    sht_info.hash_table[i] = i + 1; // skip metadata block
+  }
+  metadata += sizeof(SHT_info);
+  memcpy(metadata, sht_info.hash_table, buckets * sizeof(int));
 
   // commit changes
   BF_Block_SetDirty(metadata_block);
