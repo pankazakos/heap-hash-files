@@ -13,6 +13,16 @@ typedef struct {
   int *hash_table; /* πίνακας κατακερματισμού */
 } SHT_info;
 
+typedef struct {
+  int tuples; /* αριθμός των πλειάδων ενός block */
+  int overflow_block; /* δείκτης στο επόμενο block (block υπερχείλισης) */
+} SHT_block_info;
+
+typedef struct {
+  char name[15]; /* όνομα εγγραφής (πεδίο δευτερεύοντος ευρετηρίου) */
+  int block_id; /* μπλοκ στο οποίο αποθηκεύτηκε η εγγραφή με όνομα name */
+} Tuple;
+
 /*Η συνάρτηση SHT_CreateSecondaryIndex χρησιμοποιείται για τη δημιουργία
 και κατάλληλη αρχικοποίηση ενός αρχείου δευτερεύοντος κατακερματισμού με
 όνομα sfileName για το αρχείο πρωτεύοντος κατακερματισμού fileName. Σε
@@ -64,5 +74,8 @@ int SHT_SecondaryGetAllEntries(
 
 /* Απλή συνάρτηση κατακερματισμού */
 int Hash_name(char *name, int size);
+
+/* Στατιστικά Δευτερεύοντος ευρετηρίου */
+int SHT_HashStatistics(char *filename);
 
 #endif // SHT_FILE_H
