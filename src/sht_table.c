@@ -17,7 +17,6 @@
   }
 
 #define MAX_TUPLES BF_BLOCK_SIZE / sizeof(Tuple)
-#define CAPACITY BF_BLOCK_SIZE / sizeof(Record)
 
 int Hash_name(char *name, int size) {
   int sum = 0;
@@ -269,7 +268,7 @@ int SHT_SecondaryGetAllEntries(HT_info *ht_info, SHT_info *sht_info,
         // Read data block info
         char *sdata = BF_Block_GetData(data_block);
         char *ndata = sdata;
-        ndata += CAPACITY * sizeof(Record);
+        ndata += MAX_RECORDS * sizeof(Record);
         HT_block_info data_block_info;
         memcpy(&data_block_info, ndata, sizeof(HT_block_info));
 
