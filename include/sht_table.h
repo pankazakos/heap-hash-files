@@ -10,6 +10,7 @@ typedef struct {
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
   int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
+  int *hash_table; /* πίνακας κατακερματισμού */
 } SHT_info;
 
 /*Η συνάρτηση SHT_CreateSecondaryIndex χρησιμοποιείται για τη δημιουργία
@@ -62,6 +63,6 @@ int SHT_SecondaryGetAllEntries(
     char *name /* το όνομα στο οποίο γίνεται αναζήτηση */);
 
 /* Απλή συνάρτηση κατακερματισμού */
-int Hash_function(int key, int size);
+int Hash_function(char *name, int size);
 
 #endif // SHT_FILE_H
