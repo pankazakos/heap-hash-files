@@ -22,8 +22,6 @@
 #define d(x)
 #endif
 
-#define CAPACITY BF_BLOCK_SIZE / sizeof(Record)
-
 int Hash_function(int key, int size) { return key % size; }
 
 int HT_CreateFile(char *fileName, int buckets) {
@@ -49,7 +47,6 @@ int HT_CreateFile(char *fileName, int buckets) {
   strncpy(ht_info.type, "Hash_file", 10 * sizeof(char));
   ht_info.fileDesc = fd;
   ht_info.numBuckets = buckets;
-  ht_info.capacity = BF_BLOCK_SIZE / sizeof(Record);
   // initialize hash table
   int *hash_table = malloc(buckets * sizeof(int));
   for (int i = 0; i < buckets; i++) {
@@ -74,7 +71,7 @@ int HT_CreateFile(char *fileName, int buckets) {
     // store block info
     char *sdata = BF_Block_GetData(new_block);
     char *ndata = sdata;
-    ndata += CAPACITY * sizeof(Record);
+    ndata += MAX_RECORDS * sizeof(Record);
     HT_block_info block_info;
     block_info.records = 0;
     block_info.overflow_block = -1;
@@ -149,12 +146,12 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
   CALL_BF(BF_GetBlock(ht_info->fileDesc, ht_info->hash_table[bucket], block));
   char *sdata = BF_Block_GetData(block);
   char *ndata = sdata;
-  ndata += CAPACITY * sizeof(Record);
+  ndata += MAX_RECORDS * sizeof(Record);
 
   HT_block_info block_info;
   memcpy(&block_info, ndata, sizeof(HT_block_info));
 
-  if (block_info.records == CAPACITY) {
+  if (block_info.records == MAX_RECORDS) {
     // allocate new block and update first block of bucket
     BF_Block *new_block;
     BF_Block_Init(&new_block);
@@ -166,7 +163,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
     memcpy(ndata, &record, sizeof(Record));
 
     // update block_info
-    ndata += CAPACITY * sizeof(Record);
+    ndata += MAX_RECORDS * sizeof(Record);
     HT_block_info new_block_info;
     memcpy(&new_block_info, ndata, sizeof(HT_block_info));
     new_block_info.records = 1;
@@ -202,7 +199,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
 
     // update block_info
     block_info.records++;
-    ndata = sdata + CAPACITY * sizeof(Record);
+    ndata = sdata + MAX_RECORDS * sizeof(Record);
     memcpy(ndata, &block_info, sizeof(HT_block_info));
     BF_Block_SetDirty(block);
   }
@@ -235,7 +232,7 @@ int HT_GetAllEntries(HT_info *ht_info, void *value) {
     CALL_BF(BF_GetBlock(ht_info->fileDesc, curr_block_idx, curr_block));
     char *sdata = BF_Block_GetData(curr_block);
     char *ndata = sdata;
-    ndata += CAPACITY * sizeof(Record);
+    ndata += MAX_RECORDS * sizeof(Record);
 
     // read block info
     HT_block_info block_info;
@@ -328,7 +325,7 @@ int HT_HashStatistics(char *filename) {
       BF_Block_Init(&curr_block);
       CALL_BF(BF_GetBlock(fd, curr_index, curr_block));
       char *data = BF_Block_GetData(curr_block);
-      data += CAPACITY * sizeof(Record);
+      data += MAX_RECORDS * sizeof(Record);
       HT_block_info block_info;
       memcpy(&block_info, data, sizeof(HT_block_info));
 
