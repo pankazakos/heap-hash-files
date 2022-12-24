@@ -282,7 +282,7 @@ int HT_GetAllEntries(HT_info *ht_info, void *value) {
   }
 }
 
-int HashStatistics(char *filename) {
+int HT_HashStatistics(char *filename) {
   // Hash Statistics
 
   // open file
@@ -360,15 +360,14 @@ int HashStatistics(char *filename) {
 
   printf(
       "-------------------------------------------------------------------\n");
+  printf("HT_HashStatistics\n\n");
   printf("Total blocks: %d\n", block_counter);
   printf("Minimum bucket records: %d\n", min);
   printf("Maximum bucket records: %d\n", max);
   printf("Average bucket records: %lf\n",
          (double)sum_records / (double)ht_info.numBuckets);
-  printf("Average blocks of buckets: %lf\n",
+  printf("Average blocks of buckets: %lf\n\n",
          (double)block_counter / (double)ht_info.numBuckets);
-  printf(
-      "-------------------------------------------------------------------\n");
   printf("Buckets with overflow blocks: %d\n", overflow_buckets);
 
   printf("Overflow blocks for each bucket\n");

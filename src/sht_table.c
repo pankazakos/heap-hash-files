@@ -308,10 +308,8 @@ int SHT_HashStatistics(char *filename) {
   printf("Maximum bucket tuples: %d\n", max);
   printf("Average bucket tuples: %lf\n",
          (double)sum_tuples / (double)sht_info.numBuckets);
-  printf("Average blocks of buckets: %lf\n",
+  printf("Average blocks of buckets: %lf\n\n",
          (double)block_counter / (double)sht_info.numBuckets);
-  printf(
-      "-------------------------------------------------------------------\n");
   printf("Buckets with overflow blocks: %d\n", overflow_buckets);
 
   printf("Overflow blocks for each bucket\n");
