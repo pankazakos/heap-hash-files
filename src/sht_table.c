@@ -16,6 +16,16 @@
     }                                                                          \
   }
 
+int Hash_Function(char *name, int size) {
+  int sum = 0;
+  int c;
+  while (c = *name++) {
+    sum += c;
+  }
+
+  return sum % size;
+}
+
 int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
   // shtCreate
 
@@ -35,6 +45,7 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
   SHT_info sht_info;
   sht_info.fileDesc = fd;
   sht_info.numBuckets = buckets;
+  sht_info.hash_table = calloc(buckets, sizeof(int));
   char *metadata = BF_Block_GetData(metadata_block);
   memcpy(metadata, &sht_info, sizeof(SHT_info));
 
@@ -90,6 +101,7 @@ SHT_info *SHT_OpenSecondaryIndex(char *indexName) {
 int SHT_CloseSecondaryIndex(SHT_info *sht_info) {
   // shtClose
   CALL_BF(BF_CloseFile(sht_info->fileDesc));
+  free(sht_info->hash_table);
   free(sht_info);
   return SHT_OK;
 }
