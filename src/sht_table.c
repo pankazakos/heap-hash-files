@@ -17,6 +17,7 @@
   }
 
 #define MAX_TUPLES BF_BLOCK_SIZE / sizeof(Tuple)
+#define CAPACITY BF_BLOCK_SIZE / sizeof(Record)
 
 int Hash_name(char *name, int size) {
   int sum = 0;
@@ -221,6 +222,86 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
 int SHT_SecondaryGetAllEntries(HT_info *ht_info, SHT_info *sht_info,
                                char *name) {
   // shtFind
+  int bucket = Hash_name(name, sht_info->numBuckets);
+
+  int block_idx = sht_info->hash_table[bucket];
+
+  // Print fields as a header
+  Record helper;
+  strncpy(helper.record, "Record", 7 * sizeof(char));
+  char *id = malloc(3 * sizeof(char));
+  strncpy(id, "ID", 3 * sizeof(char));
+  strncpy(helper.name, "Name", 5 * sizeof(char));
+  strncpy(helper.surname, "Surname", 8 * sizeof(char));
+  strncpy(helper.city, "City", 5 * sizeof(char));
+  printf("\n%-10s%-10s%-15s%-20s%-20s\n", helper.record, id, helper.name,
+         helper.surname, helper.city);
+  free(id);
+
+  /* Sequential search of name in blocks of current bucket on Secondary index to
+    find in which data blocks it is stored. If found, access and print the whole
+    record from correspoding data block */
+  while (1) {
+    BF_Block *block;
+    BF_Block_Init(&block);
+    CALL_BF(BF_GetBlock(sht_info->fileDesc, block_idx, block));
+    char *sdata = BF_Block_GetData(block);
+    char *ndata = sdata;
+
+    // Read block info of block
+    ndata += MAX_TUPLES * sizeof(Tuple);
+    SHT_block_info block_info;
+    memcpy(&block_info, ndata, sizeof(SHT_block_info));
+
+    for (int i = 0; i < block_info.tuples; i++) {
+      // Read each tuple of block
+      ndata = sdata + i * sizeof(Tuple);
+      Tuple tuple;
+      memcpy(&tuple, ndata, sizeof(Tuple));
+
+      // check name
+      if (strcmp(name, tuple.name) == 0) {
+        // Access data block
+        BF_Block *data_block;
+        BF_Block_Init(&data_block);
+        CALL_BF(BF_GetBlock(ht_info->fileDesc, tuple.block_id, data_block));
+
+        // Read data block info
+        char *sdata = BF_Block_GetData(data_block);
+        char *ndata = sdata;
+        ndata += CAPACITY * sizeof(Record);
+        HT_block_info data_block_info;
+        memcpy(&data_block_info, ndata, sizeof(HT_block_info));
+
+        // Sequential search in data block
+        for (int i = 0; i < data_block_info.records; i++) {
+          // Read record
+          ndata = sdata + i * sizeof(Record);
+          Record temp_record;
+          memcpy(&temp_record, ndata, sizeof(Record));
+
+          // Print records
+          if (strcmp(temp_record.name, tuple.name) == 0) {
+            printf("%-10s%-10d%-15s%-20s%-20s\n", temp_record.record,
+                   temp_record.id, temp_record.name, temp_record.surname,
+                   temp_record.city);
+          }
+        }
+
+        CALL_BF(BF_UnpinBlock(data_block));
+        BF_Block_Destroy(&data_block);
+      }
+    }
+
+    CALL_BF(BF_UnpinBlock(block));
+    BF_Block_Destroy(&block);
+
+    if (block_info.overflow_block == -1) {
+      break;
+    }
+
+    block_idx = block_info.overflow_block;
+  }
   return SHT_OK;
 }
 
