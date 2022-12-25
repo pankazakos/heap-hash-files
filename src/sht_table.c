@@ -45,6 +45,8 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
 
   // store secondary index info in metadata block
   SHT_info sht_info;
+  memset(&sht_info, 0, sizeof(SHT_info));
+  strcpy(sht_info.type, "Hash_File");
   sht_info.fileDesc = fd;
   sht_info.numBuckets = buckets;
   sht_info.hash_table = malloc(buckets * sizeof(int));
@@ -115,6 +117,12 @@ SHT_info *SHT_OpenSecondaryIndex(char *indexName) {
 
   char *metadata = BF_Block_GetData(metadata_block);
   memcpy(sht_info, metadata, sizeof(SHT_info));
+
+  // Check if file is of type Hash_File
+  if (strcmp(sht_info->type, "Hash_File")) {
+    printf("Given file is not of type Hash_file\n");
+    return NULL;
+  }
 
   // Update fileDescriptor
   sht_info->fileDesc = fd;

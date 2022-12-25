@@ -44,7 +44,7 @@ int HT_CreateFile(char *fileName, int buckets) {
   char *ndata = sdata;
   HT_info ht_info;
   memset(&ht_info, 0, sizeof(HT_info));
-  strncpy(ht_info.type, "Hash_file", 10 * sizeof(char));
+  strcpy(ht_info.type, "Hash_File");
   ht_info.fileDesc = fd;
   ht_info.numBuckets = buckets;
   // initialize hash table
@@ -113,8 +113,7 @@ HT_info *HT_OpenFile(char *fileName) {
   memcpy(ht_info, ndata, sizeof(HT_info));
 
   // check if file is a hash file
-  printf("%s\n", ht_info->type);
-  if (strcmp(ht_info->type, "Hash_file")) {
+  if (strcmp(ht_info->type, "Hash_File")) {
     printf("Given file is not of type Hash_file\n");
     return NULL;
   }

@@ -7,6 +7,7 @@
 #define SHT_ERROR -1
 
 typedef struct {
+  char type[20]; /* τύπος αρχείου */
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
   int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
