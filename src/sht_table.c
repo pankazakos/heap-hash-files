@@ -143,6 +143,49 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
 
   int bucket = Hash_name(record.name, sht_info->numBuckets);
 
+  /* Search bucket for existing tuple with name and block_id. If given
+    combination of name and block id already exists, do not add new tuple to
+    avoid duplicates. This will not slow down a lot the insert method as long as
+    there is not a big number of overflow blocks. Note that secondary index will
+    have less overflow blocks than the primary index, since the size of a Tuple
+    is far less than the size of a Record */
+  int curr_index = sht_info->hash_table[bucket];
+  while (1) {
+    BF_Block *curr_block;
+    BF_Block_Init(&curr_block);
+    CALL_BF(BF_GetBlock(sht_info->fileDesc, curr_index, curr_block));
+    char *start_curr_data = BF_Block_GetData(curr_block);
+    char *curr_data = start_curr_data;
+
+    // Read block info of current block
+    curr_data += MAX_TUPLES * sizeof(Tuple);
+    SHT_block_info block_info;
+    memcpy(&block_info, curr_data, sizeof(SHT_block_info));
+
+    for (int i = 0; i < block_info.tuples; i++) {
+      // Read tuple
+      curr_data = start_curr_data + i * sizeof(Tuple);
+      Tuple tuple;
+      memcpy(&tuple, curr_data, sizeof(Tuple));
+
+      // If identical tuple is found, return
+      if (strcmp(tuple.name, record.name) == 0 && tuple.block_id == block_id) {
+        CALL_BF(BF_UnpinBlock(curr_block));
+        BF_Block_Destroy(&curr_block);
+
+        return SHT_OK;
+      }
+    }
+    if (block_info.overflow_block == -1) {
+      CALL_BF(BF_UnpinBlock(curr_block));
+      BF_Block_Destroy(&curr_block);
+      break;
+    }
+    curr_index = block_info.overflow_block;
+    CALL_BF(BF_UnpinBlock(curr_block));
+    BF_Block_Destroy(&curr_block);
+  }
+
   Tuple tuple;
   memset(&tuple, 0, sizeof(Tuple));
   strcpy(tuple.name, record.name);
@@ -160,6 +203,7 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
   ndata += MAX_TUPLES * sizeof(Tuple);
   memcpy(&block_info, ndata, sizeof(SHT_block_info));
 
+  // Insert new tuple in current block or allocate a new one
   if (block_info.tuples == MAX_TUPLES) {
     // Allocate new block and update first block of bucket
     BF_Block *new_block;
