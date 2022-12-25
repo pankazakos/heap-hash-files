@@ -8,7 +8,7 @@
 #define MAX_RECORDS BF_BLOCK_SIZE / sizeof(Record)
 
 typedef struct {
-  char type[20];
+  char type[20]; /* τύπος αρχείου */
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
   int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
