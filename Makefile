@@ -7,6 +7,9 @@ all-hp: clean run-hp
 
 all-ht: clean run-ht
 
+all-main: clean main
+	./build/all_main
+
 Bin = ./build
 Include = ./include
 Lib = ./lib
@@ -24,12 +27,17 @@ bf:
 	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/bf_main.c $(SRC)/record.c -lbf -o $(Bin)/bf_main -O2
 
 ht:
-	@echo " Compile hp_main ...";
+	@echo " Compile ht_main ...";
 	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/ht_main.c $(SRC)/record.c $(SRC)/ht_table.c -lbf -o $(Bin)/ht_main -O2
 
 sht:
-	@echo " Compile hp_main ...";
+	@echo " Compile sht_main ...";
 	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/sht_main.c $(SRC)/record.c $(SRC)/sht_table.c $(SRC)/ht_table.c -lbf -o $(Bin)/sht_main -O2
+
+main:
+	@echo " Compile all_main ...";
+	gcc -I $(Include) -L $(Lib) -Wl,-rpath,$(Lib) $(Examples)/all_main.c $(SRC)/record.c $(SRC)/sht_table.c $(SRC)/ht_table.c $(SRC)/hp_file.c -lbf -o $(Bin)/all_main -O2
+
 
 run-hp: hp
 	./$(Bin)/hp_main
