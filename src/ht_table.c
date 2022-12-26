@@ -211,14 +211,11 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
   return block_id;
 }
 
-int HT_GetAllEntries(HT_info *ht_info, void *value) {
+int HT_GetAllEntries(HT_info *ht_info, int value) {
   // find entries with given value
 
-  int casted_value;
-  memcpy(&casted_value, value, sizeof(int));
-
   // hash value
-  int curr_block_idx = Hash_function(casted_value, ht_info->numBuckets);
+  int curr_block_idx = Hash_function(value, ht_info->numBuckets);
 
   // get first block of bucket
   curr_block_idx = ht_info->hash_table[curr_block_idx];
@@ -242,7 +239,7 @@ int HT_GetAllEntries(HT_info *ht_info, void *value) {
       ndata = sdata + i * sizeof(Record);
       Record record;
       memcpy(&record, ndata, sizeof(Record));
-      if (record.id == casted_value) {
+      if (record.id == value) {
         Record helper;
         strncpy(helper.record, "Record", 7 * sizeof(char));
         char *id = malloc(3 * sizeof(char));
