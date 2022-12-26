@@ -42,7 +42,7 @@ int HP_CreateFile(char *fileName) {
   char *ndata = sdata;
   HP_info hp_info;
   memset(&hp_info, 0, sizeof(HP_info));
-  strncpy(hp_info.type, "Heap_file", 10 * sizeof(char));
+  strncpy(hp_info.type, "Heap_File", 10 * sizeof(char));
   hp_info.fileDesc = fd;
   hp_info.capacity = CAPACITY;
   memcpy(ndata, &hp_info, sizeof(HP_info));
@@ -88,8 +88,7 @@ HP_info *HP_OpenFile(char *fileName) {
   memcpy(hp_info, ndata, sizeof(HP_info));
 
   // check if file is a heap file
-  printf("%s\n", hp_info->type);
-  if (strcmp(hp_info->type, "Heap_file")) {
+  if (strcmp(hp_info->type, "Heap_File")) {
     printf("Given file is not of type Heap_file\n");
     return NULL;
   }
