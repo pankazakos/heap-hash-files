@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define RECORDS_NUM 300
+#define RECORDS_NUM 200
 #define HP_FILENAME "heap.db"
 #define HT_FILENAME "hash.db"
 #define SHT_FILENAME "secondary_index.db"
@@ -35,7 +35,7 @@ int main(void) {
   // Create files
   CALL_BF(BF_Init(LRU));
   ASSERT(HP_CreateFile(HP_FILENAME));
-  int buckets = 20;
+  int buckets = 10;
   ASSERT(HT_CreateFile(HT_FILENAME, buckets));
   ASSERT(SHT_CreateSecondaryIndex(SHT_FILENAME, buckets, HT_FILENAME));
   CALL_BF(BF_Close());

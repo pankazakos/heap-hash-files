@@ -38,6 +38,5 @@ int main() {
   HT_GetAllEntries(info, id);
 
   HT_CloseFile(info);
-  HT_HashStatistics(FILE_NAME);
   BF_Close();
 }
