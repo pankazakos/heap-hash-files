@@ -6,9 +6,9 @@
 #include <string.h>
 #include <time.h>
 
-#define RECORDS_NUM 200 // you can change it if you want
+#define RECORDS_NUM 300 // you can change it if you want
 #define FILE_NAME "hash.db"
-#define INDEX_NAME "index.db"
+#define INDEX_NAME "secondary_index.db"
 
 #define CALL_OR_DIE(call)                                                      \
   {                                                                            \
@@ -48,8 +48,5 @@ int main() {
   // Κλείνουμε το αρχείο κατακερματισμού και το δευτερεύον ευρετήριο
   SHT_CloseSecondaryIndex(index_info);
   HT_CloseFile(info);
-  // Hash statistics
-  HT_HashStatistics(FILE_NAME);
-  SHT_HashStatistics(INDEX_NAME);
   BF_Close();
 }
