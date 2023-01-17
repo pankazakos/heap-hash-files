@@ -5,12 +5,12 @@
 #define HT_OK 0
 #define HT_ERROR -1
 
-#define MAX_RECORDS BF_BLOCK_SIZE / sizeof(Record)
-
 typedef struct {
   char type[20]; /* τύπος αρχείου */
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
+  int max_records; /* ο μέγιστος αριθμός από εγγραφές για κάθε block του
+                      αρχείου*/
   int numBuckets; /* το πλήθος των “κάδων” του αρχείου κατακερματισμού */
   int *hash_table; /* πίνακας κατακερματισμού */
 } HT_info;

@@ -22,8 +22,6 @@
 #define d(x)
 #endif
 
-#define CAPACITY BF_BLOCK_SIZE / sizeof(Record)
-
 int HP_CreateFile(char *fileName) {
   // create file
   CALL_BF(BF_CreateFile(fileName));
@@ -44,11 +42,11 @@ int HP_CreateFile(char *fileName) {
   memset(&hp_info, 0, sizeof(HP_info));
   strncpy(hp_info.type, "Heap_File", 10 * sizeof(char));
   hp_info.fileDesc = fd;
-  hp_info.capacity = CAPACITY;
+  hp_info.max_records = BF_BLOCK_SIZE / sizeof(Record);
   memcpy(ndata, &hp_info, sizeof(HP_info));
 
   // move pointer to store HP_Block_info in the end of the file
-  ndata += CAPACITY * sizeof(Record);
+  ndata += hp_info.max_records * sizeof(Record);
   HP_Block_info block_info;
   block_info.records = 0;
   memcpy(ndata, &block_info, sizeof(HP_Block_info));
@@ -125,12 +123,12 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
   char *ndata = sdata;
 
   // get HP_block_info of last block
-  ndata += CAPACITY * sizeof(Record);
+  ndata += hp_info->max_records * sizeof(Record);
   HP_Block_info block_info;
   memcpy(&block_info, ndata, sizeof(HP_Block_info));
 
   // Check if current last block is full or if it is metadata block
-  if (block_info.records == CAPACITY || last_id == 0) {
+  if (block_info.records == hp_info->max_records || last_id == 0) {
     // allocate new block
     BF_Block *new_block;
     BF_Block_Init(&new_block);
@@ -142,7 +140,7 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
     memcpy(ndata_new, &record, sizeof(Record));
 
     // create HP_Block_info for new_block
-    ndata_new += CAPACITY * sizeof(Record);
+    ndata_new += hp_info->max_records * sizeof(Record);
     HP_Block_info new_info;
     new_info.records = 1;
     memcpy(ndata_new, &new_info, sizeof(HP_Block_info));
@@ -155,7 +153,7 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
     ndata = sdata + block_info.records * sizeof(Record);
     memcpy(ndata, &record, sizeof(Record));
     block_info.records++;
-    ndata = sdata + CAPACITY * sizeof(Record);
+    ndata = sdata + hp_info->max_records * sizeof(Record);
     memcpy(ndata, &block_info, sizeof(HP_Block_info));
     BF_Block_SetDirty(last_block);
   }
@@ -181,7 +179,7 @@ int HP_GetAllEntries(HP_info *hp_info, int value) {
     char *sdata = BF_Block_GetData(curr_block);
     char *ndata = sdata;
 
-    ndata += CAPACITY * sizeof(Record);
+    ndata += hp_info->max_records * sizeof(Record);
     HP_Block_info block_info;
     memcpy(&block_info, ndata, sizeof(HP_Block_info));
 

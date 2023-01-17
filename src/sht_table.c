@@ -16,8 +16,6 @@
     }                                                                          \
   }
 
-#define MAX_TUPLES BF_BLOCK_SIZE / sizeof(Tuple)
-
 int Hash_name(char *name, int size) {
   int sum = 0;
   int c;
@@ -48,6 +46,7 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
   memset(&sht_info, 0, sizeof(SHT_info));
   strcpy(sht_info.type, "Hash_File");
   sht_info.fileDesc = fd;
+  sht_info.max_tuples = BF_BLOCK_SIZE / sizeof(Tuple);
   sht_info.numBuckets = buckets;
   sht_info.hash_table = malloc(buckets * sizeof(int));
 
@@ -76,7 +75,7 @@ int SHT_CreateSecondaryIndex(char *sfileName, int buckets, char *fileName) {
     // store block info
     char *sdata = BF_Block_GetData(new_block);
     char *ndata = sdata;
-    ndata += MAX_TUPLES * sizeof(Tuple);
+    ndata += sht_info.max_tuples * sizeof(Tuple);
     SHT_block_info block_info;
     block_info.tuples = 0;
     block_info.overflow_block = -1;
@@ -166,7 +165,7 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
     char *curr_data = start_curr_data;
 
     // Read block info of current block
-    curr_data += MAX_TUPLES * sizeof(Tuple);
+    curr_data += sht_info->max_tuples * sizeof(Tuple);
     SHT_block_info block_info;
     memcpy(&block_info, curr_data, sizeof(SHT_block_info));
 
@@ -208,11 +207,11 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
   char *sdata = BF_Block_GetData(block);
   char *ndata = sdata;
   SHT_block_info block_info;
-  ndata += MAX_TUPLES * sizeof(Tuple);
+  ndata += sht_info->max_tuples * sizeof(Tuple);
   memcpy(&block_info, ndata, sizeof(SHT_block_info));
 
   // Insert new tuple in current block or allocate a new one
-  if (block_info.tuples == MAX_TUPLES) {
+  if (block_info.tuples == sht_info->max_tuples) {
     // Allocate new block and update first block of bucket
     BF_Block *new_block;
     BF_Block_Init(&new_block);
@@ -224,7 +223,7 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
     memcpy(ndata, &tuple, sizeof(Tuple));
 
     // update block info
-    ndata += MAX_TUPLES * sizeof(Tuple);
+    ndata += sht_info->max_tuples * sizeof(Tuple);
     SHT_block_info new_block_info;
     memcpy(&new_block_info, ndata, sizeof(SHT_block_info));
     new_block_info.tuples++;
@@ -259,7 +258,7 @@ int SHT_SecondaryInsertEntry(SHT_info *sht_info, Record record, int block_id) {
 
     // update block info
     block_info.tuples++;
-    ndata = sdata + MAX_TUPLES * sizeof(Tuple);
+    ndata = sdata + sht_info->max_tuples * sizeof(Tuple);
     memcpy(ndata, &block_info, sizeof(SHT_block_info));
     BF_Block_SetDirty(block);
   }
@@ -300,7 +299,7 @@ int SHT_SecondaryGetAllEntries(HT_info *ht_info, SHT_info *sht_info,
     char *ndata = sdata;
 
     // Read block info of block
-    ndata += MAX_TUPLES * sizeof(Tuple);
+    ndata += sht_info->max_tuples * sizeof(Tuple);
     SHT_block_info block_info;
     memcpy(&block_info, ndata, sizeof(SHT_block_info));
 
@@ -320,7 +319,7 @@ int SHT_SecondaryGetAllEntries(HT_info *ht_info, SHT_info *sht_info,
         // Read data block info
         char *sdata = BF_Block_GetData(data_block);
         char *ndata = sdata;
-        ndata += MAX_RECORDS * sizeof(Record);
+        ndata += ht_info->max_records * sizeof(Record);
         HT_block_info data_block_info;
         memcpy(&data_block_info, ndata, sizeof(HT_block_info));
 
@@ -402,7 +401,7 @@ int SHT_HashStatistics(char *filename) {
       BF_Block_Init(&curr_block);
       CALL_BF(BF_GetBlock(fd, curr_index, curr_block));
       char *data = BF_Block_GetData(curr_block);
-      data += MAX_TUPLES * sizeof(Tuple);
+      data += sht_info.max_tuples * sizeof(Tuple);
       SHT_block_info block_info;
       memcpy(&block_info, data, sizeof(SHT_block_info));
 
