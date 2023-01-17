@@ -10,7 +10,8 @@ typedef struct {
   char type[20];
   int fileDesc; /* αναγνωριστικός αριθμός ανοίγματος αρχείου από το επίπεδο
                    block */
-  int capacity; /* ο μέγιστος αριθμός από εγγραφές για κάθε block του αρχείου*/
+  int max_records; /* ο μέγιστος αριθμός από εγγραφές για κάθε block του
+                      αρχείου*/
 } HP_info;
 
 typedef struct {
