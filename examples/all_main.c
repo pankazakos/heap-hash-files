@@ -63,7 +63,7 @@ int main(void) {
   // Search one specific record with primary key in heap file
   int id = rand() % RECORDS_NUM; // id range: [0, RECORDS_NUM)
   printf("\033[1;36mSearching for id\033[m: %d\n", id);
-  ASSERT(HP_GetAllEntries(hp_info, id));
+  ASSERT(HP_FindRecord(hp_info, id));
   ASSERT(HP_CloseFile(hp_info)); // Close heap file
   CALL_BF(BF_Close());
 
@@ -100,7 +100,7 @@ int main(void) {
   id = rand() % (2 * RECORDS_NUM - RECORDS_NUM + 1) +
        RECORDS_NUM; // id range: [RECORDS_NUM, 2*RECORDS_NUM)
   printf("\033[1;36mSearching for id\033[m: %d\n", id);
-  ASSERT(HT_GetAllEntries(ht_info, id));
+  ASSERT(HT_FindRecord(ht_info, id));
 
   // Print all records containing name
   Record record = randomRecord();

@@ -212,7 +212,7 @@ int HT_InsertEntry(HT_info *ht_info, Record record) {
   return block_id;
 }
 
-int HT_GetAllEntries(HT_info *ht_info, int value) {
+int HT_FindRecord(HT_info *ht_info, int value) {
   // find entries with given value
 
   // hash value

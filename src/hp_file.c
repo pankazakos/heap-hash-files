@@ -162,7 +162,7 @@ int HP_InsertEntry(HP_info *hp_info, Record record) {
   return HP_OK;
 }
 
-int HP_GetAllEntries(HP_info *hp_info, int value) {
+int HP_FindRecord(HP_info *hp_info, int value) {
   // get all entries
 
   int searched_blocks = 0;

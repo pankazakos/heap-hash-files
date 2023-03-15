@@ -32,10 +32,9 @@ int main() {
     HT_InsertEntry(info, record);
   }
 
-  printf("RUN PrintAllEntries\n");
   int id = rand() % RECORDS_NUM;
   printf("\nSearching for: %d\n", id);
-  HT_GetAllEntries(info, id);
+  HT_FindRecord(info, id);
 
   HT_CloseFile(info);
   BF_Close();

@@ -62,7 +62,7 @@ int HP_InsertEntry(HP_info *header_info, /* επικεφαλίδα του αρχ
 επιστρέφει το πλήθος των blocks που διαβάστηκαν, ενώ σε περίπτωση λάθους
 επιστρέφει -1.
 */
-int HP_GetAllEntries(
+int HP_FindRecord(
     HP_info *header_info, /* επικεφαλίδα του αρχείου*/
     int id /* η τιμή id της εγγραφής στην οποία πραγματοποιείται η αναζήτηση*/);
 
